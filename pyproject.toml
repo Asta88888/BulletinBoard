@@ -18,6 +18,7 @@ coverage = "^7.10.7"
 drf-yasg = "^1.21.11"
 redis = "^6.4.0"
 requests = "^2.32.5"
+drf-nested-routers = "^0.95.0"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^7.3.0"
