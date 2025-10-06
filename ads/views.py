@@ -4,6 +4,7 @@ from ads.models import Ad, Review
 from ads.pagination import StandardResultPagination
 from ads.serializer import AdSerializer, ReviewSerializer
 from users.permissions import IsOwner, IsAdmin
+from rest_framework import filters
 
 
 class AdViewSet(ModelViewSet):
@@ -14,22 +15,24 @@ class AdViewSet(ModelViewSet):
     serializer_class = AdSerializer
     queryset = Ad.objects.all()
     pagination_class = StandardResultPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def get_permissions(self):
-        if self.action == 'create':
-            self.permission_classes = (IsAuthenticated,)
-        elif self.action == 'list':
-            self.permission_classes = (AllowAny,)
+        if self.action == 'list':
+            self.permission_classes = [AllowAny]
+        elif self.action == 'create':
+            self.permission_classes = [IsAuthenticated]
         elif self.action == 'retrieve':
-            self.permission_classes = (IsAuthenticated,)
+            self.permission_classes = [IsAuthenticated]
         elif self.action in ['update', 'destroy']:
-            self.permission_classes = (IsOwner | IsAdmin)
+            self.permission_classes = [IsOwner | IsAdmin]
         return super().get_permissions()
 
 class ReviewViewSet(ModelViewSet):
@@ -41,14 +44,14 @@ class ReviewViewSet(ModelViewSet):
     queryset = Review.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
     def perform_update(self, serializer):
         serializer.save()
 
     def get_permissions(self):
         if self.action in ['create', 'list', 'retrieve']:
-            self.permission_classes = (IsAuthenticated,)
+            self.permission_classes = [IsAuthenticated]
         elif self.action in ['update', 'destroy']:
-            self.permission_classes = (IsOwner | IsAdmin)
+            self.permission_classes = [IsOwner | IsAdmin]
         return super().get_permissions()

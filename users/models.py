@@ -6,6 +6,7 @@ class User(AbstractUser):
     """
     Модель пользователя. В качестве логина используется email.
     """
+    username = None
     USER = 'user'
     ADMIN = 'admin'
     ROLE_CHOICES = [
