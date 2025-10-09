@@ -18,49 +18,67 @@ class UserCreateAPIView(CreateAPIView):
     """
     Эндпоинт для регистрации нового пользователя.
     """
+
     serializer_class = UserCreateSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
 
+
 class UserListAPIView(ListAPIView):
     """
-    Эндпоинт для получения списка всех пользователей.
+    Эндпоинт для получения списка всех пользователей (только для администраторов).
     """
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAdmin]
 
+
 class UserRetrieveAPIView(RetrieveAPIView):
     """
     Эндпоинт для получения информации о конкретном пользователе.
+    Доступен либо администратору, либо самому пользователю.
     """
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAdminOrSelf]
+
 
 class UserUpdateAPIView(UpdateAPIView):
     """
     Эндпоинт для обновления информации о пользователе.
+    Доступен администратору или владельцу профиля.
     """
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAdminOrSelf]
+
 
 class UserDestroyAPIView(DestroyAPIView):
     """
     Эндпоинт для удаления пользователя.
+    Доступен администратору или самому пользователю.
     """
+
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = [IsAdminOrSelf]
 
+
 class PasswordResetView(APIView):
     """
-    Эндпоинт для сброса пароля.
+    Эндпоинт для инициализации процесса сброса пароля.
+    Отправляет на email пользователя ссылку для восстановления пароля.
     """
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """
+        Отправляет письмо со ссылкой для сброса пароля.
+        """
         email = request.data.get("email")
         user = User.objects.get(email=email)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -74,27 +92,48 @@ class PasswordResetView(APIView):
             from_email=EMAIL_HOST_USER,
             recipient_list=[user.email],
         )
-        return Response({'detail': 'Password reset email sent.'}, status=status.HTTP_200_OK)
+        return Response({"detail": "Password reset email sent."}, status=status.HTTP_200_OK)
+
 
 class PasswordResetDoneView(APIView):
+    """
+    Эндпоинт для отображения уведомления после отправки ссылки на сброс пароля.
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response({'detail': 'Please check your email for the password reset link.'})
+        """
+        Возвращает уведомление о необходимости проверить почту.
+        """
+        return Response({"detail": "Please check your email for the password reset link."})
+
 
 class PasswordResetConfirmView(APIView):
+    """
+    Эндпоинт для подтверждения и установки нового пароля.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
+        """
+        Устанавливает новый пароль для пользователя.
+        """
         password = request.data.get("password")
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
         user.set_password(password)
         user.save()
-        return Response({'detail': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)
+        return Response({"detail": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
 
 class PasswordResetCompleteView(APIView):
+    """
+    Эндпоинт для отображения уведомления после успешного сброса пароля.
+    """
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response({'detail': 'Your password has been reset. You can now log in with the new password.'})
+        """
+        Возвращает сообщение о том, что пароль успешно изменён.
+        """
+        return Response({"detail": "Your password has been reset. You can now log in with the new password."})

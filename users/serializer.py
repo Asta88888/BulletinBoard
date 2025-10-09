@@ -6,14 +6,17 @@ class UserSerializer(serializers.ModelSerializer):
     """
     Сериализатор для отображения и редактирования пользователя.
     """
+
     class Meta:
         model = User
         exclude = ["password"]
+
 
 class UserCreateSerializer(serializers.ModelSerializer):
     """
     Сериализатор для регистрации нового пользователя.
     """
+
     password = serializers.CharField(write_only=True)
 
     class Meta:
