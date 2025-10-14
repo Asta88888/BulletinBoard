@@ -1,9 +1,10 @@
-from rest_framework import status
-from rest_framework.test import APITestCase
-from ads.models import Ad, Review
-from users.models import User
 from django.urls import reverse
 from django.utils.timezone import localtime
+from rest_framework import status
+from rest_framework.test import APITestCase
+
+from ads.models import Ad, Review
+from users.models import User
 
 
 class AdTestCase(APITestCase):

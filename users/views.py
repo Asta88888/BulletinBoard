@@ -1,17 +1,17 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.utils.encoding import force_str
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from config.settings import EMAIL_HOST_USER
 from users.models import User
 from users.permissions import IsAdmin, IsAdminOrSelf
-from users.serializer import UserSerializer, UserCreateSerializer
+from users.serializer import UserCreateSerializer, UserSerializer
 
 
 class UserCreateAPIView(CreateAPIView):
@@ -99,6 +99,7 @@ class PasswordResetDoneView(APIView):
     """
     Эндпоинт для отображения уведомления после отправки ссылки на сброс пароля.
     """
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -112,6 +113,7 @@ class PasswordResetConfirmView(APIView):
     """
     Эндпоинт для подтверждения и установки нового пароля.
     """
+
     permission_classes = [AllowAny]
 
     def post(self, request, uidb64, token):
@@ -130,6 +132,7 @@ class PasswordResetCompleteView(APIView):
     """
     Эндпоинт для отображения уведомления после успешного сброса пароля.
     """
+
     permission_classes = [AllowAny]
 
     def get(self, request):

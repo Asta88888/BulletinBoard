@@ -1,9 +1,9 @@
-from django.urls import path, include
-from rest_framework_nested import routers
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
+from rest_framework_nested import routers
+
 from ads.apps import AdsConfig
 from ads.views import AdViewSet, ReviewViewSet
-
 
 app_name = AdsConfig.name
 
