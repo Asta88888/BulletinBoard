@@ -54,7 +54,10 @@ class ReviewViewSet(ModelViewSet):
     """
 
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        ad_id = self.kwargs.get("ad_pk")
+        return Review.objects.filter(ad_id=ad_id)
 
     def perform_create(self, serializer):
         """
